@@ -230,10 +230,32 @@ class AStarPlanner:
                 if pixel_x < 0 or pixel_y < 0 or pixel_x >= image_width or pixel_y >= image_height:
                     continue
 
-                # 障害物判定 (黒いピクセルが障害物)
-                if binary_image[pixel_y, pixel_x] == 0:  # 黒いピクセルは障害物
+        #         # 障害物判定 (黒いピクセルが障害物)
+        #         if binary_image[pixel_y, pixel_x] == 0:  # 黒いピクセルは障害物
+        #             self.obstacle_map[ix][iy] = True
+
+                # 半径内のピクセルをチェック
+                collision = False
+                for dx in range(-int(self.rr / map_grid_size), int(self.rr / map_grid_size) + 1):
+                    for dy in range(-int(self.rr / map_grid_size), int(self.rr / map_grid_size) + 1):
+                        neighbor_x = pixel_x + dx
+                        neighbor_y = pixel_y + dy
+
+                        # 範囲外チェック
+                        if neighbor_x < 0 or neighbor_y < 0 or neighbor_x >= image_width or neighbor_y >= image_height:
+                            continue
+
+                        # 黒いピクセルが存在する場合は障害物と判定
+                        if binary_image[neighbor_y, neighbor_x] == 0:  # 黒いピクセルは障害物
+                            collision = True
+                            break
+                    if collision:
+                        break
+
+                # 障害物としてマーク
+                if collision:
                     self.obstacle_map[ix][iy] = True
-        # print(self.obstacle_map)
+
 
     @staticmethod
     def get_motion_model():
@@ -251,12 +273,12 @@ class AStarPlanner:
 
 def main():
     # start and goal position
-    sx = 60.0  # [m]
-    sy = 0.0  # [m]
-    gx = 50.0  # [m]
+    sx =150.0  # [m]
+    sy = 60.0  # [m]
+    gx = 20.0  # [m]
     gy = 50.0  # [m]
-    grid_size = 0.1  # [m]
-    robot_radius = 1.0  # [m]
+    grid_size = 1.0  # [m]
+    robot_radius = 2.0  # [m]
 
     # set obstacle positions
     # ox, oy = [], []
